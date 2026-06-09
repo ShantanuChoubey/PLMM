@@ -55,7 +55,8 @@ export const FACULTY_ROUTES = {
 }
 
 export const ADMIN_ROUTES = {
-  DASHBOARD: '/admin',
+  ROOT: '/admin',
+  DASHBOARD: '/admin/dashboard',
   USERS: '/admin/users',
   MENTORS: '/admin/mentors',
   SESSIONS: '/admin/sessions',
