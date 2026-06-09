@@ -93,4 +93,5 @@ export const STORAGE_KEYS = {
   AUTH_TOKEN: 'plmm-auth-token',
   AUTH_USER: 'plmm-auth-user',
   MOCK_USERS: 'plmm-mock-users',
+  SIDEBAR_COLLAPSED: 'plmm-sidebar-collapsed',
 }

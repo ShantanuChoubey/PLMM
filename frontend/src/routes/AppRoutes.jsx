@@ -1,11 +1,11 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
 import { AuthBootstrap } from '@/components/common/AuthBootstrap'
 import { GuestRoute } from '@/components/common/GuestRoute'
-import { ProtectedAreaPlaceholder } from '@/components/common/ProtectedAreaPlaceholder'
 import { ProtectedRoute } from '@/components/common/ProtectedRoute'
 import { RoleGuard } from '@/components/common/RoleGuard'
+import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { PublicLayout } from '@/components/layout/PublicLayout'
-import { protectedRouteConfig } from '@/routes/protectedRouteConfig'
+import { dashboardRouteGroups } from '@/routes/dashboardRoutes'
 import { ROUTES } from '@/constants/routes'
 import About from '@/pages/public/About'
 import Home from '@/pages/public/Home'
@@ -25,20 +25,31 @@ export function AppRoutes() {
               <Route path={ROUTES.LOGIN} element={<Login />} />
               <Route path={ROUTES.REGISTER} element={<Register />} />
             </Route>
-            <Route element={<ProtectedRoute />}>
-              {protectedRouteConfig.map(({ path, area, allowedRoles }) => (
+            <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
+          </Route>
+
+          <Route element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              {dashboardRouteGroups.map((group) => (
                 <Route
-                  key={path}
-                  path={path}
+                  key={group.path}
+                  path={group.path}
                   element={
-                    <RoleGuard allowedRoles={allowedRoles}>
-                      <ProtectedAreaPlaceholder area={area} allowedRoles={allowedRoles} />
+                    <RoleGuard allowedRoles={group.allowedRoles}>
+                      <Outlet />
                     </RoleGuard>
                   }
-                />
+                >
+                  {group.routes.map((route) =>
+                    route.index ? (
+                      <Route key={`${group.path}-index`} index element={route.element} />
+                    ) : (
+                      <Route key={route.path} path={route.path} element={route.element} />
+                    ),
+                  )}
+                </Route>
               ))}
             </Route>
-            <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
           </Route>
         </Routes>
       </AuthBootstrap>

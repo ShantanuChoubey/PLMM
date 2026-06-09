@@ -1,0 +1,78 @@
+export const MENTOR_SESSION_TABS = ['pending', 'accepted', 'completed', 'cancelled']
+
+export const MENTOR_SESSIONS = [
+  {
+    id: 'ms1',
+    learnerName: 'Alex Parker',
+    topic: 'React State Management Deep Dive',
+    requestedDate: '2026-06-12',
+    requestedTime: '2:00 PM',
+    status: 'pending',
+    meetingType: 'Video Call',
+  },
+  {
+    id: 'ms2',
+    learnerName: 'Jamie Lee',
+    topic: 'ML Project Scoping',
+    requestedDate: '2026-06-14',
+    requestedTime: '11:00 AM',
+    status: 'pending',
+    meetingType: 'Video Call',
+  },
+  {
+    id: 'ms3',
+    learnerName: 'Chris Morgan',
+    topic: 'Binary Trees & Recursion',
+    requestedDate: '2026-06-16',
+    requestedTime: '5:00 PM',
+    status: 'pending',
+    meetingType: 'In Person',
+  },
+  {
+    id: 'ms4',
+    learnerName: 'Priya Sharma',
+    topic: 'Component Testing Strategies',
+    requestedDate: '2026-06-18',
+    requestedTime: '3:00 PM',
+    status: 'accepted',
+    meetingType: 'Video Call',
+  },
+  {
+    id: 'ms5',
+    learnerName: 'Noah Taylor',
+    topic: 'TypeScript Best Practices',
+    requestedDate: '2026-06-20',
+    requestedTime: '4:00 PM',
+    status: 'accepted',
+    meetingType: 'Video Call',
+  },
+  {
+    id: 'ms6',
+    learnerName: 'Alex Parker',
+    topic: 'React Hooks Patterns',
+    requestedDate: '2026-06-05',
+    requestedTime: '3:00 PM',
+    status: 'completed',
+    meetingType: 'Video Call',
+  },
+  {
+    id: 'ms7',
+    learnerName: 'Jamie Lee',
+    topic: 'API Design Review',
+    requestedDate: '2026-06-01',
+    requestedTime: '10:00 AM',
+    status: 'completed',
+    meetingType: 'Video Call',
+  },
+  {
+    id: 'ms8',
+    learnerName: 'David Kim',
+    topic: 'Portfolio Review',
+    requestedDate: '2026-05-28',
+    requestedTime: '10:00 AM',
+    status: 'cancelled',
+    meetingType: 'Video Call',
+  },
+]
+
+export const MENTOR_UPCOMING_SESSIONS = MENTOR_SESSIONS.filter((s) => s.status === 'accepted')
