@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
-import { FileText } from 'lucide-react'
+import { useState } from 'react'
 import { PageContainer } from '@/components/layout/PageContainer'
-import { EmptyState } from '@/components/common/EmptyState'
+import { PresetEmptyState } from '@/components/common/emptyStates'
+import { QueryErrorState } from '@/components/common/QueryErrorState'
+import { ResourceCardSkeleton } from '@/components/common/skeletons/AppSkeletons'
 import { BookmarkedResources } from '@/components/hub/BookmarkedResources'
 import { CategoryFilter } from '@/components/hub/CategoryFilter'
 import { HubResourceCard } from '@/components/hub/ResourceCard'
@@ -10,41 +11,40 @@ import { ResourceDetailsModal } from '@/components/hub/ResourceDetailsModal'
 import { SearchFilters } from '@/components/hub/SearchFilters'
 import { UploadResourceModal } from '@/components/hub/UploadResourceModal'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { BOOKMARKED_RESOURCE_IDS } from '@/mock/bookmarkedResources'
-import { HUB_RESOURCE_CATEGORIES, HUB_RESOURCE_TYPES, RESOURCE_SORT_OPTIONS } from '@/mock/resourceCategories'
-import { RECOMMENDED_HUB_RESOURCES } from '@/mock/recommendedResources'
-import { HUB_RESOURCES, RESOURCE_USAGE_CHART } from '@/mock/resourceData'
+import { useBookmarkedResources, useHubResources, useRecommendedResources, useToggleBookmark, useUploadResource } from '@/hooks/api/useResources'
 import { ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
 
 export default function ResourcesHubPage({ title = 'Resource Hub', description = 'Discover, bookmark, and share learning resources.' }) {
-  const [resources, setResources] = useState(HUB_RESOURCES)
-  const [bookmarkedIds, setBookmarkedIds] = useState(BOOKMARKED_RESOURCE_IDS)
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('all')
   const [type, setType] = useState('all')
   const [sort, setSort] = useState('newest')
   const [activeTab, setActiveTab] = useState('discover')
   const [selectedResource, setSelectedResource] = useState(null)
+  const [bookmarkedIds, setBookmarkedIds] = useState([])
 
-  const filtered = useMemo(() => {
-    let result = [...resources]
-    if (search) {
-      const q = search.toLowerCase()
-      result = result.filter((r) => r.title.toLowerCase().includes(q) || r.description.toLowerCase().includes(q) || r.tags.some((t) => t.toLowerCase().includes(q)))
-    }
-    if (category !== 'all') result = result.filter((r) => r.category === category)
-    if (type !== 'all') result = result.filter((r) => r.type === type)
-    if (sort === 'newest') result.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt))
-    if (sort === 'popular') result.sort((a, b) => b.views - a.views)
-    if (sort === 'downloads') result.sort((a, b) => b.downloads - a.downloads)
-    if (sort === 'recent') result.sort((a, b) => (b.recentlyViewed ? 1 : 0) - (a.recentlyViewed ? 1 : 0))
-    return result
-  }, [resources, search, category, type, sort])
+  const params = { search, category, type, sort }
+  const { data, isLoading, isError, error, refetch } = useHubResources(params)
+  const { data: recommendedData } = useRecommendedResources()
+  const { data: bookmarksData } = useBookmarkedResources()
+  const uploadResource = useUploadResource()
+  const toggleBookmark = useToggleBookmark()
 
-  const bookmarkedResources = resources.filter((r) => bookmarkedIds.includes(r.id))
+  const resources = data?.data ?? []
+  const categories = data?.meta?.categories ?? []
+  const types = data?.meta?.types ?? []
+  const sortOptions = data?.meta?.sortOptions ?? []
+  const usageChart = data?.chart ?? []
+  const resolvedBookmarkedIds = bookmarkedIds.length ? bookmarkedIds : (data?.bookmarkedIds ?? bookmarksData?.meta?.bookmarkedIds ?? [])
+  const bookmarkedResources = bookmarksData?.data ?? resources.filter((r) => resolvedBookmarkedIds.includes(r.id))
+  const recommended = recommendedData?.data ?? []
 
-  const toggleBookmark = (id) => {
-    setBookmarkedIds((c) => c.includes(id) ? c.filter((x) => x !== id) : [...c, id])
+  const handleBookmark = (id) => {
+    setBookmarkedIds((current) => {
+      const base = current.length ? current : resolvedBookmarkedIds
+      return base.includes(id) ? base.filter((x) => x !== id) : [...base, id]
+    })
+    toggleBookmark.mutate(id)
   }
 
   const tabs = [
@@ -54,12 +54,12 @@ export default function ResourcesHubPage({ title = 'Resource Hub', description =
   ]
 
   return (
-    <PageContainer title={title} description={description} actions={<UploadResourceModal onUpload={(r) => setResources((c) => [r, ...c])} />}>
+    <PageContainer title={title} description={description} actions={<UploadResourceModal onUpload={(r) => uploadResource.mutate(r)} />}>
       <Card className="mb-6 border-border/70">
         <CardHeader><CardTitle className="text-base">Resource Usage</CardTitle></CardHeader>
         <CardContent className="h-48">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={RESOURCE_USAGE_CHART}>
+            <AreaChart data={usageChart}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
               <XAxis dataKey="month" tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 11 }} />
@@ -82,21 +82,27 @@ export default function ResourcesHubPage({ title = 'Resource Hub', description =
       {activeTab === 'discover' ? (
         <>
           <SearchFilters search={search} onSearchChange={setSearch} className="mb-6">
-            <CategoryFilter categories={HUB_RESOURCE_CATEGORIES} value={category} onChange={setCategory} label="Category" />
-            <CategoryFilter categories={HUB_RESOURCE_TYPES} value={type} onChange={setType} label="Type" />
+            <CategoryFilter categories={categories} value={category} onChange={setCategory} label="Category" />
+            <CategoryFilter categories={types} value={type} onChange={setType} label="Type" />
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">Sort By</label>
               <select value={sort} onChange={(e) => setSort(e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm" aria-label="Sort resources">
-                {RESOURCE_SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                {sortOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
           </SearchFilters>
-          {filtered.length === 0 ? (
-            <EmptyState icon={FileText} title="No resources found" description="Try adjusting your filters." />
+          {isLoading ? (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => <ResourceCardSkeleton key={i} />)}
+            </div>
+          ) : isError ? (
+            <QueryErrorState error={error} onRetry={refetch} />
+          ) : resources.length === 0 ? (
+            <PresetEmptyState type="resources" />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {filtered.map((r) => (
-                <HubResourceCard key={r.id} resource={r} onView={setSelectedResource} isBookmarked={bookmarkedIds.includes(r.id)} onBookmark={toggleBookmark} />
+              {resources.map((r) => (
+                <HubResourceCard key={r.id} resource={r} onView={setSelectedResource} isBookmarked={resolvedBookmarkedIds.includes(r.id)} onBookmark={handleBookmark} />
               ))}
             </div>
           )}
@@ -104,14 +110,14 @@ export default function ResourcesHubPage({ title = 'Resource Hub', description =
       ) : null}
 
       {activeTab === 'bookmarks' ? (
-        <BookmarkedResources resources={bookmarkedResources} bookmarkedIds={bookmarkedIds} onView={setSelectedResource} onBookmark={toggleBookmark} />
+        <BookmarkedResources resources={bookmarkedResources} bookmarkedIds={resolvedBookmarkedIds} onView={setSelectedResource} onBookmark={handleBookmark} />
       ) : null}
 
       {activeTab === 'recommended' ? (
-        <RecommendedResources resources={RECOMMENDED_HUB_RESOURCES} onView={setSelectedResource} />
+        <RecommendedResources resources={recommended} onView={setSelectedResource} />
       ) : null}
 
-      <ResourceDetailsModal resource={selectedResource} open={Boolean(selectedResource)} onOpenChange={(open) => !open && setSelectedResource(null)} isBookmarked={selectedResource ? bookmarkedIds.includes(selectedResource.id) : false} onBookmark={toggleBookmark} />
+      <ResourceDetailsModal resource={selectedResource} open={Boolean(selectedResource)} onOpenChange={(open) => !open && setSelectedResource(null)} isBookmarked={selectedResource ? resolvedBookmarkedIds.includes(selectedResource.id) : false} onBookmark={handleBookmark} />
     </PageContainer>
   )
 }

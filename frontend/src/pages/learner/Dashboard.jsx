@@ -1,5 +1,6 @@
 import { PageContainer } from '@/components/layout/PageContainer'
-import { DashboardWidgetSkeleton } from '@/components/learner/skeletons/LearnerSkeletons'
+import { DashboardSkeleton } from '@/components/common/skeletons/AppSkeletons'
+import { QueryErrorState } from '@/components/common/QueryErrorState'
 import { ActivityWidget } from '@/components/learner/widgets/ActivityWidget'
 import { DashboardWelcomeCard } from '@/components/learner/widgets/DashboardWelcomeCard'
 import { NotificationWidget } from '@/components/learner/widgets/NotificationWidget'
@@ -8,59 +9,39 @@ import { RecommendationWidget } from '@/components/learner/widgets/Recommendatio
 import { SessionWidget } from '@/components/learner/widgets/SessionWidget'
 import { MyGroupsWidget, RecentGroupActivityWidget, RecommendedResourcesWidget } from '@/components/hub/widgets/LearnerHubWidgets'
 import { StatCard } from '@/components/ui/StatCard'
-import { useMockLoading } from '@/hooks/useMockLoading'
-import { DASHBOARD_METRICS } from '@/mock/learnerData'
+import { useLearnerDashboard } from '@/hooks/api/useUsers'
 import { Calendar, TrendingUp, Users, UsersRound } from 'lucide-react'
 
 export default function LearnerDashboardPage() {
-  const loading = useMockLoading(400)
+  const { data, isLoading, isError, error, refetch } = useLearnerDashboard()
+  const metrics = data?.data?.metrics
 
-  if (loading) {
+  if (isLoading) {
     return (
       <PageContainer title="Dashboard" description="Your learning overview at a glance.">
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <DashboardWidgetSkeleton key={i} />
-          ))}
-        </div>
+        <DashboardSkeleton />
+      </PageContainer>
+    )
+  }
+
+  if (isError) {
+    return (
+      <PageContainer title="Dashboard" description="Your learning overview at a glance.">
+        <QueryErrorState error={error} onRetry={refetch} />
       </PageContainer>
     )
   }
 
   return (
-    <PageContainer
-      title="Dashboard"
-      description="Your learning overview at a glance."
-    >
+    <PageContainer title="Dashboard" description="Your learning overview at a glance.">
       <div className="space-y-6">
         <DashboardWelcomeCard />
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <StatCard
-            title="Upcoming Sessions"
-            value={String(DASHBOARD_METRICS.upcomingSessions)}
-            icon={Calendar}
-            description="Scheduled in the next two weeks"
-          />
-          <StatCard
-            title="Active Mentors"
-            value={String(DASHBOARD_METRICS.activeMentors)}
-            icon={Users}
-            description="Mentors you are working with"
-          />
-          <StatCard
-            title="Study Groups"
-            value={String(DASHBOARD_METRICS.studyGroupsJoined)}
-            icon={UsersRound}
-            description="Groups you have joined"
-          />
-          <StatCard
-            title="Learning Progress"
-            value={`${DASHBOARD_METRICS.learningProgress}%`}
-            icon={TrendingUp}
-            trend="+6% this month"
-            description="Overall goal completion"
-          />
+          <StatCard title="Upcoming Sessions" value={String(metrics?.upcomingSessions ?? 0)} icon={Calendar} description="Scheduled in the next two weeks" />
+          <StatCard title="Active Mentors" value={String(metrics?.activeMentors ?? 0)} icon={Users} description="Mentors you are working with" />
+          <StatCard title="Study Groups" value={String(metrics?.studyGroupsJoined ?? 0)} icon={UsersRound} description="Groups you have joined" />
+          <StatCard title="Learning Progress" value={`${metrics?.learningProgress ?? 0}%`} icon={TrendingUp} trend="+6% this month" description="Overall goal completion" />
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">

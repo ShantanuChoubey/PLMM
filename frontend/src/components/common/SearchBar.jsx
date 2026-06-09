@@ -8,8 +8,17 @@ export function SearchBar({
   className,
   onSearch,
   defaultValue = '',
+  value: controlledValue,
+  onChange,
 }) {
-  const [value, setValue] = useState(defaultValue)
+  const [internalValue, setInternalValue] = useState(defaultValue)
+  const isControlled = controlledValue !== undefined
+  const value = isControlled ? controlledValue : internalValue
+
+  const setValue = (next) => {
+    if (!isControlled) setInternalValue(next)
+    onChange?.(next)
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault()

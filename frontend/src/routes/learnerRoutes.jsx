@@ -1,16 +1,18 @@
 import { Navigate } from 'react-router-dom'
-import LearnerDashboard from '@/pages/learner/Dashboard'
-import LearnerMentorDetails from '@/pages/learner/MentorDetails'
-import LearnerMentors from '@/pages/learner/Mentors'
-import LearnerNotifications from '@/pages/learner/Notifications'
-import LearnerProfile from '@/pages/learner/Profile'
-import LearnerProgress from '@/pages/learner/Progress'
-import LearnerRecommendations from '@/pages/learner/Recommendations'
-import LearnerSessions from '@/pages/learner/Sessions'
-import GroupDetailsPage from '@/pages/hub/GroupDetails'
-import GroupsPage from '@/pages/hub/Groups'
-import ResourcesHubPage from '@/pages/hub/Resources'
-import ModulePlaceholder from '@/pages/dashboard/ModulePlaceholder'
+import {
+  GroupDetailsPage,
+  GroupsPage,
+  LearnerDashboard,
+  LearnerMentorDetails,
+  LearnerMentors,
+  LearnerNotifications,
+  LearnerProfile,
+  LearnerProgress,
+  LearnerRecommendations,
+  LearnerSessions,
+  ModulePlaceholder,
+  ResourcesHubPage,
+} from '@/routes/lazyPages'
 import { LEARNER_ROUTES } from '@/constants/routes'
 
 function placeholder(title, description) {

@@ -1,11 +1,13 @@
 import { Navigate } from 'react-router-dom'
-import FacultyDashboard from '@/pages/faculty/Dashboard'
-import FacultyNotifications from '@/pages/faculty/Notifications'
-import FacultyProfile from '@/pages/faculty/Profile'
-import FacultySessions from '@/pages/faculty/Sessions'
-import GroupsPage from '@/pages/hub/Groups'
-import ResourcesHubPage from '@/pages/hub/Resources'
-import ModulePlaceholder from '@/pages/dashboard/ModulePlaceholder'
+import {
+  FacultyDashboard,
+  FacultyNotifications,
+  FacultyProfile,
+  FacultySessions,
+  GroupsPage,
+  ModulePlaceholder,
+  ResourcesHubPage,
+} from '@/routes/lazyPages'
 import { FACULTY_ROUTES } from '@/constants/routes'
 
 function placeholder(title, description) {

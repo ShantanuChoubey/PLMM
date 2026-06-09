@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { AuthContext } from '@/context/auth-context'
 import { authService } from '@/services/authService'
 import { showAuthError, showAuthSuccess } from '@/utils/authErrors'
+import { AUTH_EVENTS } from '@/utils/authEvents'
+import { appToast } from '@/utils/toast'
 import { storage } from '@/utils/storage'
 
 export function AuthProvider({ children }) {
@@ -62,6 +64,16 @@ export function AuthProvider({ children }) {
       isMounted = false
     }
   }, [clearSession, persistSession])
+
+  useEffect(() => {
+    function handleSessionExpired() {
+      clearSession()
+      appToast.error('Your session has expired. Please sign in again.')
+    }
+
+    window.addEventListener(AUTH_EVENTS.SESSION_EXPIRED, handleSessionExpired)
+    return () => window.removeEventListener(AUTH_EVENTS.SESSION_EXPIRED, handleSessionExpired)
+  }, [clearSession])
 
   const login = useCallback(
     async (credentials) => {

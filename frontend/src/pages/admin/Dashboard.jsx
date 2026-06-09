@@ -15,22 +15,9 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ADMIN_ROUTES } from '@/constants/routes'
-import {
-  ADMIN_KPIS,
-  ADMIN_RECENT_ACTIVITY,
-  GROWTH_METRICS,
-  PLATFORM_OVERVIEW,
-  POPULAR_GROUPS,
-  RECENT_ADMIN_RESOURCES,
-  TOP_MENTORS,
-} from '@/mock/adminDashboardData'
-import {
-  GROUP_ACTIVITY_CHART,
-  MENTOR_ENGAGEMENT_CHART,
-  RESOURCE_USAGE_CHART,
-  SESSION_TRENDS_CHART,
-  USER_GROWTH_CHART,
-} from '@/mock/analyticsData'
+import { AnalyticsSkeleton } from '@/components/common/skeletons/AppSkeletons'
+import { QueryErrorState } from '@/components/common/QueryErrorState'
+import { useAdminDashboardAnalytics } from '@/hooks/api/useAnalytics'
 import {
   ResponsiveContainer,
   LineChart,
@@ -47,7 +34,32 @@ import {
 } from 'recharts'
 
 export default function AdminDashboardPage() {
-  const kpis = ADMIN_KPIS
+  const { data, isLoading, isError, error, refetch } = useAdminDashboardAnalytics()
+  const dashboard = data?.data ?? {}
+  const kpis = dashboard.kpis ?? {}
+  const platformOverview = dashboard.overview ?? {}
+  const growthMetrics = dashboard.growthMetrics ?? []
+  const recentActivity = dashboard.recentActivity ?? []
+  const topMentors = dashboard.topMentors ?? []
+  const popularGroups = dashboard.popularGroups ?? []
+  const recentResources = dashboard.recentResources ?? []
+  const charts = dashboard.charts ?? {}
+
+  if (isLoading) {
+    return (
+      <PageContainer title="Admin Dashboard" description="Monitor platform health, users, and mentorship operations.">
+        <AnalyticsSkeleton />
+      </PageContainer>
+    )
+  }
+
+  if (isError) {
+    return (
+      <PageContainer title="Admin Dashboard" description="Monitor platform health, users, and mentorship operations.">
+        <QueryErrorState error={error} onRetry={refetch} />
+      </PageContainer>
+    )
+  }
 
   return (
     <PageContainer
@@ -77,17 +89,17 @@ export default function AdminDashboardPage() {
           <Card className="border-border/70 lg:col-span-1">
             <CardHeader><CardTitle className="text-base">Platform Overview</CardTitle></CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Weekly Active Users</span><span className="font-medium">{PLATFORM_OVERVIEW.weeklyActiveUsers}%</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Session Completion</span><span className="font-medium">{PLATFORM_OVERVIEW.sessionCompletionRate}%</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Mentor Satisfaction</span><span className="font-medium">{PLATFORM_OVERVIEW.mentorSatisfaction}/5</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Resource Engagement</span><span className="font-medium">{PLATFORM_OVERVIEW.resourceEngagement}%</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Weekly Active Users</span><span className="font-medium">{platformOverview.weeklyActiveUsers}%</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Session Completion</span><span className="font-medium">{platformOverview.sessionCompletionRate}%</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Mentor Satisfaction</span><span className="font-medium">{platformOverview.mentorSatisfaction}/5</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Resource Engagement</span><span className="font-medium">{platformOverview.resourceEngagement}%</span></div>
             </CardContent>
           </Card>
           <Card className="border-border/70 lg:col-span-2">
             <CardHeader><CardTitle className="text-base">Growth Metrics</CardTitle></CardHeader>
             <CardContent className="h-48">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={GROWTH_METRICS}>
+                <AreaChart data={growthMetrics}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                   <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} />
@@ -103,7 +115,7 @@ export default function AdminDashboardPage() {
         <div className="grid gap-6 lg:grid-cols-2">
           <ChartCard title="User Growth">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={USER_GROWTH_CHART}>
+              <LineChart data={charts.userGrowth ?? []}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
@@ -116,7 +128,7 @@ export default function AdminDashboardPage() {
           </ChartCard>
           <ChartCard title="Session Trends">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={SESSION_TRENDS_CHART}>
+              <BarChart data={charts.sessionTrends ?? []}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
@@ -132,7 +144,7 @@ export default function AdminDashboardPage() {
         <div className="grid gap-6 lg:grid-cols-3">
           <ChartCard title="Mentor Engagement" contentClassName="h-52">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={MENTOR_ENGAGEMENT_CHART}>
+              <LineChart data={charts.mentorEngagement ?? []}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="week" tick={{ fontSize: 10 }} />
                 <YAxis tick={{ fontSize: 10 }} />
@@ -143,7 +155,7 @@ export default function AdminDashboardPage() {
           </ChartCard>
           <ChartCard title="Group Activity" contentClassName="h-52">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={GROUP_ACTIVITY_CHART}>
+              <BarChart data={charts.groupActivity ?? []}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="month" tick={{ fontSize: 10 }} />
                 <YAxis tick={{ fontSize: 10 }} />
@@ -154,7 +166,7 @@ export default function AdminDashboardPage() {
           </ChartCard>
           <ChartCard title="Resource Usage" contentClassName="h-52">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={RESOURCE_USAGE_CHART}>
+              <AreaChart data={charts.resourceUsage ?? []}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="month" tick={{ fontSize: 10 }} />
                 <YAxis tick={{ fontSize: 10 }} />
@@ -173,7 +185,7 @@ export default function AdminDashboardPage() {
             </CardHeader>
             <CardContent>
               <ul className="space-y-4">
-                {ADMIN_RECENT_ACTIVITY.map((a) => (
+                {recentActivity.map((a) => (
                   <li key={a.id} className="border-b border-border/60 pb-4 last:border-0 last:pb-0">
                     <p className="text-sm font-medium">{a.title}</p>
                     <p className="text-sm text-muted-foreground">{a.description}</p>
@@ -186,7 +198,7 @@ export default function AdminDashboardPage() {
           <Card className="border-border/70">
             <CardHeader><CardTitle>Top Mentors</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              {TOP_MENTORS.map((m) => (
+              {topMentors.map((m) => (
                 <div key={m.id} className="flex items-center justify-between rounded-lg border border-border/60 p-3">
                   <div>
                     <p className="text-sm font-medium">{m.name}</p>
@@ -203,7 +215,7 @@ export default function AdminDashboardPage() {
           <Card className="border-border/70">
             <CardHeader><CardTitle>Popular Groups</CardTitle></CardHeader>
             <CardContent className="space-y-2">
-              {POPULAR_GROUPS.map((g) => (
+              {popularGroups.map((g) => (
                 <div key={g.id} className="flex justify-between rounded-lg border border-border/60 p-3 text-sm">
                   <div>
                     <p className="font-medium">{g.name}</p>
@@ -217,7 +229,7 @@ export default function AdminDashboardPage() {
           <Card className="border-border/70">
             <CardHeader><CardTitle>Recent Resources</CardTitle></CardHeader>
             <CardContent className="space-y-2">
-              {RECENT_ADMIN_RESOURCES.map((r) => (
+              {recentResources.map((r) => (
                 <div key={r.id} className="flex justify-between rounded-lg border border-border/60 p-3 text-sm">
                   <div>
                     <p className="font-medium">{r.title}</p>

@@ -1,0 +1,85 @@
+export const queryKeys = {
+  mentors: {
+    all: ['mentors'],
+    list: (params) => ['mentors', 'list', params],
+    detail: (id) => ['mentors', 'detail', id],
+    profile: ['mentors', 'profile'],
+    meta: ['mentors', 'meta'],
+  },
+  sessions: {
+    all: ['sessions'],
+    list: (params) => ['sessions', 'list', params],
+    detail: (id) => ['sessions', 'detail', id],
+    tabs: ['sessions', 'tabs'],
+  },
+  groups: {
+    all: ['groups'],
+    list: (params) => ['groups', 'list', params],
+    detail: (id) => ['groups', 'detail', id],
+    members: (id) => ['groups', 'members', id],
+    activity: (id) => ['groups', 'activity', id],
+    charts: ['groups', 'charts'],
+  },
+  resources: {
+    all: ['resources'],
+    list: (params) => ['resources', 'list', params],
+    detail: (id) => ['resources', 'detail', id],
+    bookmarks: ['resources', 'bookmarks'],
+    recommended: ['resources', 'recommended'],
+    categories: ['resources', 'categories'],
+    chart: ['resources', 'chart'],
+  },
+  notifications: {
+    all: ['notifications'],
+    list: (params) => ['notifications', 'list', params],
+  },
+  analytics: {
+    all: ['analytics'],
+    dashboard: ['analytics', 'dashboard'],
+    platform: ['analytics', 'platform'],
+    admin: ['analytics', 'admin'],
+  },
+  recommendations: {
+    all: ['recommendations'],
+    list: (params) => ['recommendations', 'list', params],
+  },
+  reviews: {
+    all: ['reviews'],
+    list: (params) => ['reviews', 'list', params],
+    summary: ['reviews', 'summary'],
+  },
+  availability: {
+    all: ['availability'],
+    slots: ['availability', 'slots'],
+    summary: ['availability', 'summary'],
+  },
+  users: {
+    all: ['users'],
+    list: (params) => ['users', 'list', params],
+    detail: (id) => ['users', 'detail', id],
+    profile: ['users', 'profile'],
+  },
+  learner: {
+    dashboard: ['learner', 'dashboard'],
+    progress: ['learner', 'progress'],
+  },
+  faculty: {
+    dashboard: ['faculty', 'dashboard'],
+    profile: ['faculty', 'profile'],
+    sessions: ['faculty', 'sessions'],
+  },
+  admin: {
+    dashboard: ['admin', 'dashboard'],
+    users: (params) => ['admin', 'users', params],
+    mentors: (params) => ['admin', 'mentors', params],
+    sessions: (params) => ['admin', 'sessions', params],
+    groups: (params) => ['admin', 'groups', params],
+    resources: (params) => ['admin', 'resources', params],
+    auditLogs: (params) => ['admin', 'audit-logs', params],
+    settings: ['admin', 'settings'],
+    systemStatus: ['admin', 'system-status'],
+  },
+  ai: {
+    recommendations: (params) => ['ai', 'recommendations', params],
+  },
+}

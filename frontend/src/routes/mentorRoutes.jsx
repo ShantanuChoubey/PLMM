@@ -1,13 +1,15 @@
 import { Navigate } from 'react-router-dom'
-import MentorAvailability from '@/pages/mentor/Availability'
-import MentorDashboard from '@/pages/mentor/Dashboard'
-import MentorNotifications from '@/pages/mentor/Notifications'
-import MentorProfile from '@/pages/mentor/Profile'
-import MentorReviews from '@/pages/mentor/Reviews'
-import MentorSessions from '@/pages/mentor/Sessions'
-import GroupsPage from '@/pages/hub/Groups'
-import ResourcesHubPage from '@/pages/hub/Resources'
-import ModulePlaceholder from '@/pages/dashboard/ModulePlaceholder'
+import {
+  GroupsPage,
+  MentorAvailability,
+  MentorDashboard,
+  MentorNotifications,
+  MentorProfile,
+  MentorReviews,
+  MentorSessions,
+  ModulePlaceholder,
+  ResourcesHubPage,
+} from '@/routes/lazyPages'
 import { MENTOR_ROUTES } from '@/constants/routes'
 
 function placeholder(title, description) {

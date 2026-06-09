@@ -1,4 +1,6 @@
+import { Suspense } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { PageLoader } from '@/components/common/PageLoader'
 import { motion } from 'framer-motion'
 import { SidebarProvider } from '@/context/SidebarProvider'
 import { MobileSidebar } from '@/components/layout/MobileSidebar'
@@ -29,7 +31,9 @@ function DashboardContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <Outlet />
+            <Suspense fallback={<PageLoader />}>
+              <Outlet />
+            </Suspense>
           </motion.div>
         </main>
         <DashboardFooter />
