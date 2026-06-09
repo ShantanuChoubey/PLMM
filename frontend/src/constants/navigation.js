@@ -134,6 +134,12 @@ export const MENTOR_NAVIGATION = [
         allowedRoles: [ROLES.PEER_MENTOR],
       },
       {
+        label: 'Groups',
+        icon: UsersRound,
+        route: MENTOR_ROUTES.GROUPS,
+        allowedRoles: [ROLES.PEER_MENTOR],
+      },
+      {
         label: 'Resources',
         icon: BookOpen,
         route: MENTOR_ROUTES.RESOURCES,
@@ -185,6 +191,12 @@ export const FACULTY_NAVIGATION = [
         label: 'Sessions',
         icon: Calendar,
         route: FACULTY_ROUTES.SESSIONS,
+        allowedRoles: [ROLES.FACULTY_MENTOR],
+      },
+      {
+        label: 'Groups',
+        icon: UsersRound,
+        route: FACULTY_ROUTES.GROUPS,
         allowedRoles: [ROLES.FACULTY_MENTOR],
       },
       {

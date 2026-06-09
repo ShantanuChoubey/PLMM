@@ -15,6 +15,7 @@ import {
   MENTOR_SESSION_TREND,
 } from '@/mock/mentorData'
 import { MENTOR_SESSIONS } from '@/mock/mentorSessionData'
+import { CommunityActivityWidget, GroupsManagedWidget, ResourcesSharedWidget } from '@/components/hub/widgets/MentorHubWidgets'
 import { ResponsiveContainer, BarChart, Bar, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
 
 export default function MentorDashboardPage() {
@@ -46,6 +47,12 @@ export default function MentorDashboardPage() {
           <MetricCard title="Average Rating" value={String(metrics.averageRating)} icon={Star} />
           <MetricCard title="Students Mentored" value={String(metrics.studentsMentored)} icon={Users} />
           <MetricCard title="Resources Shared" value={String(metrics.resourcesShared)} icon={BookOpen} />
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          <GroupsManagedWidget />
+          <ResourcesSharedWidget />
+          <CommunityActivityWidget />
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">

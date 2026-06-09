@@ -6,6 +6,7 @@ import { MetricCard } from '@/components/shared/MetricCard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/hooks/useAuth'
 import { FACULTY_DASHBOARD_METRICS, FACULTY_RECENT_ACTIVITY, FACULTY_ENGAGEMENT_CHART } from '@/mock/facultyData'
+import { CommunityInsightsWidget, EducationalResourcesPublishedWidget, GroupsMonitoredWidget } from '@/components/hub/widgets/FacultyHubWidgets'
 import { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, BarChart, Bar } from 'recharts'
 
 export default function FacultyDashboardPage() {
@@ -31,6 +32,12 @@ export default function FacultyDashboardPage() {
           <MetricCard title="Resources Published" value={String(metrics.resourcesPublished)} icon={BookOpen} />
           <MetricCard title="Student Engagement" value={`${metrics.studentEngagement}%`} icon={Users} trend="+3% this month" />
         </div>
+        <div className="grid gap-6 lg:grid-cols-3">
+          <GroupsMonitoredWidget />
+          <EducationalResourcesPublishedWidget />
+          <CommunityInsightsWidget />
+        </div>
+
         <div className="grid gap-6 lg:grid-cols-2">
           <Card className="border-border/70">
             <CardHeader><CardTitle>Engagement Metrics</CardTitle></CardHeader>

@@ -6,7 +6,7 @@ import { NotificationWidget } from '@/components/learner/widgets/NotificationWid
 import { ProgressWidget } from '@/components/learner/widgets/ProgressWidget'
 import { RecommendationWidget } from '@/components/learner/widgets/RecommendationWidget'
 import { SessionWidget } from '@/components/learner/widgets/SessionWidget'
-import { StudyGroupWidget } from '@/components/learner/widgets/StudyGroupWidget'
+import { MyGroupsWidget, RecentGroupActivityWidget, RecommendedResourcesWidget } from '@/components/hub/widgets/LearnerHubWidgets'
 import { StatCard } from '@/components/ui/StatCard'
 import { useMockLoading } from '@/hooks/useMockLoading'
 import { DASHBOARD_METRICS } from '@/mock/learnerData'
@@ -68,11 +68,16 @@ export default function LearnerDashboardPage() {
           <SessionWidget />
         </div>
 
+        <div className="grid gap-6 lg:grid-cols-2">
+          <MyGroupsWidget />
+          <RecommendedResourcesWidget />
+        </div>
+
         <div className="grid gap-6 lg:grid-cols-3">
           <ProgressWidget />
-          <ActivityWidget />
+          <RecentGroupActivityWidget />
           <div className="space-y-6">
-            <StudyGroupWidget />
+            <ActivityWidget />
             <NotificationWidget />
           </div>
         </div>

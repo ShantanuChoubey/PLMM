@@ -7,7 +7,11 @@ import LearnerProfile from '@/pages/learner/Profile'
 import LearnerProgress from '@/pages/learner/Progress'
 import LearnerRecommendations from '@/pages/learner/Recommendations'
 import LearnerSessions from '@/pages/learner/Sessions'
+import GroupDetailsPage from '@/pages/hub/GroupDetails'
+import GroupsPage from '@/pages/hub/Groups'
+import ResourcesHubPage from '@/pages/hub/Resources'
 import ModulePlaceholder from '@/pages/dashboard/ModulePlaceholder'
+import { LEARNER_ROUTES } from '@/constants/routes'
 
 function placeholder(title, description) {
   return <ModulePlaceholder title={title} description={description} />
@@ -23,7 +27,8 @@ export const learnerRoutes = [
   { path: 'sessions', element: <LearnerSessions /> },
   { path: 'progress', element: <LearnerProgress /> },
   { path: 'notifications', element: <LearnerNotifications /> },
-  { path: 'groups', element: placeholder('Groups', 'Collaborate with study groups.') },
-  { path: 'resources', element: placeholder('Resources', 'Access shared learning resources.') },
+  { path: 'groups', element: <GroupsPage groupsBasePath={LEARNER_ROUTES.GROUPS} /> },
+  { path: 'groups/:groupId', element: <GroupDetailsPage groupsBasePath={LEARNER_ROUTES.GROUPS} /> },
+  { path: 'resources', element: <ResourcesHubPage /> },
   { path: 'settings', element: placeholder('Settings', 'Configure your account settings.') },
 ]
