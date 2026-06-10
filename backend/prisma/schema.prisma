@@ -1,4 +1,4 @@
-// PLMM — Prisma schema (Sprint 1: infrastructure placeholder only)
+// PLMM — Prisma schema
 
 generator client {
   provider = "prisma-client-js"
@@ -9,8 +9,101 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  LEARNER
+  PEER_MENTOR
+  FACULTY_MENTOR
+  ADMIN
+}
+
+model User {
+  id             String          @id @default(cuid())
+  name           String
+  email          String          @unique
+  password       String
+  role           Role            @default(LEARNER)
+  avatar         String?
+  isVerified     Boolean         @default(false)
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  learnerProfile LearnerProfile?
+  mentorProfile  MentorProfile?
+  facultyProfile FacultyProfile?
+
+  @@map("users")
+}
+
+model LearnerProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  department   String?
+  year         String?
+  bio          String?
+  goals        String?
+  availability String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("learner_profiles")
+}
+
+model MentorProfile {
+  id             String        @id @default(cuid())
+  userId         String        @unique
+  bio            String?
+  experience     String?
+  rating         Float         @default(0)
+  totalSessions  Int           @default(0)
+  specialization String?
+  availability   String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills         MentorSkill[]
+
+  @@map("mentor_profiles")
+}
+
+model FacultyProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  designation String?
+  department  String?
+  expertise   String?
+  bio         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("faculty_profiles")
+}
+
+model Skill {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  description  String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  mentorSkills MentorSkill[]
+
+  @@map("skills")
+}
+
+model MentorSkill {
+  id        String        @id @default(cuid())
+  mentorId  String
+  skillId   String
+  createdAt DateTime      @default(now())
+  mentor    MentorProfile @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  skill     Skill         @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([mentorId, skillId])
+  @@map("mentor_skills")
+}
+
 /// Placeholder model for database connectivity testing.
-/// Business models will be added in future sprints.
 model SystemHealth {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())

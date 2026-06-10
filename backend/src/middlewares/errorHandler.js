@@ -18,6 +18,23 @@ export function globalErrorHandler(err, req, res, next) {
     message = 'Database connection failed'
   }
 
+  if (err.code === 'P2002') {
+    statusCode = StatusCodes.CONFLICT
+    const target = err.meta?.target
+
+    if (Array.isArray(target) && target.includes('email')) {
+      message = MESSAGES.EMAIL_EXISTS
+    } else if (Array.isArray(target) && target.includes('name')) {
+      message = MESSAGES.SKILL_ALREADY_EXISTS
+    } else if (Array.isArray(target) && target.includes('userId')) {
+      message = MESSAGES.PROFILE_ALREADY_EXISTS
+    } else if (Array.isArray(target) && target.includes('mentorId') && target.includes('skillId')) {
+      message = MESSAGES.SKILL_ALREADY_ASSIGNED
+    } else {
+      message = MESSAGES.PROFILE_ALREADY_EXISTS
+    }
+  }
+
   if (env.isDevelopment) {
     logger.error(message, { stack: err.stack, path: req.originalUrl })
   } else if (!err.isOperational) {
@@ -27,5 +44,5 @@ export function globalErrorHandler(err, req, res, next) {
     logger.error(message, { path: req.originalUrl })
   }
 
-  return sendError(res, { message, statusCode })
+  return sendError(res, { message, statusCode, errors: err.errors })
 }
