@@ -30,6 +30,14 @@ export function globalErrorHandler(err, req, res, next) {
       message = MESSAGES.PROFILE_ALREADY_EXISTS
     } else if (Array.isArray(target) && target.includes('mentorId') && target.includes('skillId')) {
       message = MESSAGES.SKILL_ALREADY_ASSIGNED
+    } else if (
+      Array.isArray(target) &&
+      target.includes('mentorId') &&
+      target.includes('day') &&
+      target.includes('startTime') &&
+      target.includes('endTime')
+    ) {
+      message = MESSAGES.SLOT_ALREADY_EXISTS
     } else {
       message = MESSAGES.PROFILE_ALREADY_EXISTS
     }

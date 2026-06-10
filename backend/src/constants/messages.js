@@ -31,6 +31,14 @@ export const MESSAGES = {
   SKILL_ALREADY_ASSIGNED: 'Skill already assigned to mentor',
   MENTOR_SKILL_NOT_FOUND: 'Mentor skill assignment not found',
   MENTOR_PROFILE_REQUIRED: 'Mentor profile is required before assigning skills',
+  SLOT_CREATED: 'Availability slot created',
+  SLOT_UPDATED: 'Availability slot updated',
+  SLOT_DELETED: 'Availability slot deleted',
+  SLOT_ALREADY_EXISTS: 'Slot already exists',
+  SLOT_OVERLAPPING: 'Overlapping slot detected',
+  SLOT_NOT_FOUND: 'Availability slot not found',
+  SLOT_INVALID_TIME_RANGE: 'End time must be after start time',
+  MENTOR_NOT_FOUND: 'Mentor not found',
 }
 
 export const API_VERSION = 'v1'

@@ -50,18 +50,19 @@ model LearnerProfile {
 }
 
 model MentorProfile {
-  id             String        @id @default(cuid())
-  userId         String        @unique
-  bio            String?
-  experience     String?
-  rating         Float         @default(0)
-  totalSessions  Int           @default(0)
-  specialization String?
-  availability   String?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  skills         MentorSkill[]
+  id                String             @id @default(cuid())
+  userId            String             @unique
+  bio               String?
+  experience        String?
+  rating            Float              @default(0)
+  totalSessions     Int                @default(0)
+  specialization    String?
+  availability      String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills            MentorSkill[]
+  availabilitySlots AvailabilitySlot[]
 
   @@map("mentor_profiles")
 }
@@ -101,6 +102,21 @@ model MentorSkill {
 
   @@unique([mentorId, skillId])
   @@map("mentor_skills")
+}
+
+model AvailabilitySlot {
+  id        String        @id @default(cuid())
+  mentorId  String
+  day       String
+  startTime String
+  endTime   String
+  isBooked  Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  mentor    MentorProfile @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+
+  @@unique([mentorId, day, startTime, endTime])
+  @@map("availability_slots")
 }
 
 /// Placeholder model for database connectivity testing.

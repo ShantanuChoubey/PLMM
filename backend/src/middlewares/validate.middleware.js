@@ -7,7 +7,14 @@ export function validate(schema, source = 'body') {
   return (req, res, next) => {
     try {
       const parsed = schema.parse(req[source])
-      req[source] = parsed
+
+      if (source === 'body') {
+        req.body = parsed
+      } else {
+        req.validated ??= {}
+        req.validated[source] = parsed
+      }
+
       return next()
     } catch (error) {
       if (error instanceof ZodError) {
