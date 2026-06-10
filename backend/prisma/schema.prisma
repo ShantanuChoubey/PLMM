@@ -1,0 +1,20 @@
+// PLMM — Prisma schema (Sprint 1: infrastructure placeholder only)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Placeholder model for database connectivity testing.
+/// Business models will be added in future sprints.
+model SystemHealth {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  note      String   @default("connection test")
+
+  @@map("system_health")
+}
