@@ -133,6 +133,7 @@ model LearnerProfile {
   sessions     Session[]
   reviews      Review[]
   progressRecords ProgressRecord[]
+  recommendations MentorRecommendation[]
 
   @@map("learner_profiles")
 }
@@ -153,6 +154,7 @@ model MentorProfile {
   availabilitySlots AvailabilitySlot[]
   sessions          Session[]
   reviews           Review[]
+  recommendations   MentorRecommendation[]
 
   @@map("mentor_profiles")
 }
@@ -389,6 +391,24 @@ model Review {
   @@index([mentorId])
   @@index([learnerId])
   @@map("reviews")
+}
+
+// ─── Mentor Recommendations ───────────────────────────────────────────────────
+
+model MentorRecommendation {
+  id        String        @id @default(cuid())
+  learnerId String
+  mentorId  String
+  score     Float
+  reason    String
+  createdAt DateTime      @default(now())
+
+  learner LearnerProfile @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+  mentor  MentorProfile  @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+
+  @@index([learnerId])
+  @@index([mentorId])
+  @@map("mentor_recommendations")
 }
 
 // ─── System ───────────────────────────────────────────────────────────────────

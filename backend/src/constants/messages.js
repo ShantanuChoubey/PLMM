@@ -109,6 +109,11 @@ export const MESSAGES = {
   AI_GENERATION_FAILED: 'Failed to generate AI response',
   AI_INVALID_JSON: 'AI returned an invalid response format',
   AI_RESPONSE_GENERATED: 'AI response generated successfully',
+
+  // ─── Recommendations ───────────────────────────────────────────────────────
+  RECOMMENDATIONS_GENERATED: 'Mentor recommendations generated successfully',
+  RECOMMENDATIONS_DELETED: 'Recommendations cleared successfully',
+  RECOMMENDATION_NOT_FOUND: 'Recommendation not found',
 }
 
 export const API_VERSION = 'v1'
