@@ -1,3 +1,5 @@
+// PLMM — Prisma schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -6,6 +8,91 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Role {
+  LEARNER
+  PEER_MENTOR
+  FACULTY_MENTOR
+  ADMIN
+}
+
+enum SessionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COMPLETED
+  CANCELLED
+}
+
+enum GroupVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum GroupRole {
+  OWNER
+  MODERATOR
+  MEMBER
+}
+
+enum ResourceType {
+  PDF
+  VIDEO
+  ARTICLE
+  LINK
+  DOCUMENT
+  PRESENTATION
+}
+
+enum NotificationType {
+  SESSION_BOOKED
+  SESSION_ACCEPTED
+  SESSION_REJECTED
+  SESSION_CANCELLED
+  SESSION_COMPLETED
+  GROUP_JOINED
+  GROUP_CREATED
+  RESOURCE_UPLOADED
+  REVIEW_RECEIVED
+  SYSTEM
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  REGISTER
+  BOOK_SESSION
+  COMPLETE_SESSION
+  JOIN_GROUP
+  UPLOAD_RESOURCE
+  SUBMIT_REVIEW
+}
+
+enum AuditEntityType {
+  USER
+  PROFILE
+  SKILL
+  MENTOR
+  SESSION
+  GROUP
+  RESOURCE
+  REVIEW
+  NOTIFICATION
+  SYSTEM
+}
+
+// ─── User ─────────────────────────────────────────────────────────────────────
 
 model User {
   id             String          @id @default(cuid())
@@ -18,12 +105,19 @@ model User {
   isActive       Boolean         @default(true)
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
-  facultyProfile FacultyProfile?
   learnerProfile LearnerProfile?
   mentorProfile  MentorProfile?
+  facultyProfile FacultyProfile?
+  groupMembers   GroupMember[]
+  resources      Resource[]
+  studyGroups    StudyGroup[]
+  notifications  Notification[]
+  auditLogs      AuditLog[]
 
   @@map("users")
 }
+
+// ─── Profiles ─────────────────────────────────────────────────────────────────
 
 model LearnerProfile {
   id           String    @id @default(cuid())
@@ -37,6 +131,8 @@ model LearnerProfile {
   updatedAt    DateTime  @updatedAt
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   sessions     Session[]
+  reviews      Review[]
+  progressRecords ProgressRecord[]
 
   @@map("learner_profiles")
 }
@@ -52,10 +148,11 @@ model MentorProfile {
   availability      String?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
-  availabilitySlots AvailabilitySlot[]
   user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   skills            MentorSkill[]
+  availabilitySlots AvailabilitySlot[]
   sessions          Session[]
+  reviews           Review[]
 
   @@map("mentor_profiles")
 }
@@ -73,6 +170,8 @@ model FacultyProfile {
 
   @@map("faculty_profiles")
 }
+
+// ─── Skills ───────────────────────────────────────────────────────────────────
 
 model Skill {
   id           String        @id @default(cuid())
@@ -97,6 +196,8 @@ model MentorSkill {
   @@map("mentor_skills")
 }
 
+// ─── Availability ─────────────────────────────────────────────────────────────
+
 model AvailabilitySlot {
   id        String        @id @default(cuid())
   mentorId  String
@@ -113,8 +214,10 @@ model AvailabilitySlot {
   @@map("availability_slots")
 }
 
+// ─── Sessions ─────────────────────────────────────────────────────────────────
+
 model Session {
-  id          String           @id @default(cuid())
+  id          String        @id @default(cuid())
   learnerId   String
   mentorId    String
   slotId      String
@@ -122,14 +225,15 @@ model Session {
   description String?
   meetingLink String?
   notes       String?
-  status      SessionStatus    @default(PENDING)
+  status      SessionStatus @default(PENDING)
   scheduledAt DateTime?
   completedAt DateTime?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   learner     LearnerProfile   @relation(fields: [learnerId], references: [id], onDelete: Cascade)
   mentor      MentorProfile    @relation(fields: [mentorId], references: [id], onDelete: Cascade)
   slot        AvailabilitySlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  review      Review?
 
   @@index([learnerId])
   @@index([mentorId])
@@ -138,6 +242,157 @@ model Session {
   @@map("sessions")
 }
 
+// ─── Study Groups ─────────────────────────────────────────────────────────────
+
+model StudyGroup {
+  id          String          @id @default(cuid())
+  name        String
+  description String?
+  category    String
+  visibility  GroupVisibility @default(PUBLIC)
+  maxMembers  Int             @default(50)
+  createdBy   String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  creator     User            @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  members     GroupMember[]
+  resources   Resource[]
+
+  @@index([category])
+  @@index([visibility])
+  @@index([createdBy])
+  @@map("study_groups")
+}
+
+model GroupMember {
+  id        String     @id @default(cuid())
+  groupId   String
+  userId    String
+  role      GroupRole  @default(MEMBER)
+  joinedAt  DateTime   @default(now())
+  group     StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@map("group_members")
+}
+
+// ─── Resources ────────────────────────────────────────────────────────────────
+
+model Resource {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  type        ResourceType
+  category    String
+  fileUrl     String?
+  publicId    String?      // Cloudinary public_id for deletion
+  externalUrl String?
+  uploadedBy  String
+  groupId     String?
+  views       Int          @default(0)
+  downloads   Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  uploader    User         @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+  group       StudyGroup?  @relation(fields: [groupId], references: [id], onDelete: SetNull)
+
+  @@index([uploadedBy])
+  @@index([groupId])
+  @@index([type])
+  @@index([category])
+  @@map("resources")
+}
+
+// ─── Audit Logs ───────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id          String          @id @default(cuid())
+  userId      String?         // nullable — system events may have no user
+  action      AuditAction
+  entityType  AuditEntityType
+  entityId    String?
+  description String?
+  metadata    Json?
+  createdAt   DateTime        @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ─── Progress Tracking ───────────────────────────────────────────────────────
+
+model ProgressRecord {
+  id         String         @id @default(cuid())
+  learnerId  String
+  skill      String
+  progress   Int            @default(0)   // 0–100
+  notes      String?
+  status     ProgressStatus @default(NOT_STARTED)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  learner LearnerProfile @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+
+  @@unique([learnerId, skill])   // one record per skill per learner
+  @@index([learnerId])
+  @@index([status])
+  @@index([skill])
+  @@index([createdAt])
+  @@map("progress_records")
+}
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType @default(SYSTEM)
+  isRead    Boolean          @default(false)
+  metadata  Json?            // stores related IDs (sessionId, groupId, etc.)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([type])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// ─── Reviews ──────────────────────────────────────────────────────────────────
+
+model Review {
+  id        String        @id @default(cuid())
+  mentorId  String
+  learnerId String
+  sessionId String        @unique   // one review per session
+  rating    Int
+  comment   String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  mentor  MentorProfile  @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  learner LearnerProfile @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+  session Session        @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([mentorId])
+  @@index([learnerId])
+  @@map("reviews")
+}
+
+// ─── System ───────────────────────────────────────────────────────────────────
+
 /// Placeholder model for database connectivity testing.
 model SystemHealth {
   id        String   @id @default(cuid())
@@ -145,19 +400,4 @@ model SystemHealth {
   note      String   @default("connection test")
 
   @@map("system_health")
-}
-
-enum Role {
-  LEARNER
-  PEER_MENTOR
-  FACULTY_MENTOR
-  ADMIN
-}
-
-enum SessionStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
-  COMPLETED
-  CANCELLED
 }

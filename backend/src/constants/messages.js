@@ -60,6 +60,49 @@ export const MESSAGES = {
   SESSION_COMPLETED: 'Session completed successfully',
   SESSION_NOT_FOUND: 'Session not found',
   SESSION_INVALID_STATUS: 'Action not allowed for the current session status',
+
+  // ─── Groups ────────────────────────────────────────────────────────────────
+  GROUP_CREATED: 'Group created successfully',
+  GROUP_UPDATED: 'Group updated successfully',
+  GROUP_DELETED: 'Group deleted successfully',
+  GROUP_NOT_FOUND: 'Group not found',
+  GROUP_FULL: 'Group has reached its maximum member limit',
+  GROUP_JOINED: 'Joined group successfully',
+  GROUP_LEFT: 'Left group successfully',
+  ALREADY_GROUP_MEMBER: 'You are already a member of this group',
+  NOT_GROUP_MEMBER: 'You are not a member of this group',
+
+  // ─── Resources ─────────────────────────────────────────────────────────────
+  RESOURCE_CREATED: 'Resource created successfully',
+  RESOURCE_UPDATED: 'Resource updated successfully',
+  RESOURCE_DELETED: 'Resource deleted successfully',
+  RESOURCE_NOT_FOUND: 'Resource not found',
+  UPLOAD_FAILED: 'File upload failed',
+  CLOUDINARY_NOT_CONFIGURED: 'File upload service is not configured',
+
+  // ─── Reviews ───────────────────────────────────────────────────────────────
+  REVIEW_CREATED: 'Review submitted successfully',
+  REVIEW_UPDATED: 'Review updated successfully',
+  REVIEW_DELETED: 'Review deleted successfully',
+  REVIEW_NOT_FOUND: 'Review not found',
+  REVIEW_ALREADY_EXISTS: 'You have already reviewed this session',
+  SESSION_NOT_COMPLETED: 'Reviews can only be submitted for completed sessions',
+
+  // ─── Notifications ─────────────────────────────────────────────────────────
+  NOTIFICATION_NOT_FOUND: 'Notification not found',
+  NOTIFICATION_MARKED_READ: 'Notification marked as read',
+  NOTIFICATIONS_ALL_READ: 'All notifications marked as read',
+  NOTIFICATION_DELETED: 'Notification deleted successfully',
+
+  // ─── Progress ──────────────────────────────────────────────────────────────
+  PROGRESS_CREATED: 'Progress record created successfully',
+  PROGRESS_UPDATED: 'Progress updated successfully',
+  PROGRESS_DELETED: 'Progress record deleted successfully',
+  PROGRESS_NOT_FOUND: 'Progress record not found',
+
+  // ─── Audit Logs ────────────────────────────────────────────────────────────
+  AUDIT_LOGS_FETCHED: 'Audit logs fetched successfully',
+  AUDIT_LOG_NOT_FOUND: 'Audit log not found',
 }
 
 export const API_VERSION = 'v1'

@@ -37,4 +37,13 @@ export const env = {
     expiresIn: process.env.JWT_EXPIRES_IN,
   },
   clientUrl: process.env.CLIENT_URL,
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME ?? '',
+    apiKey: process.env.CLOUDINARY_API_KEY ?? '',
+    apiSecret: process.env.CLOUDINARY_API_SECRET ?? '',
+    configured:
+      !!(process.env.CLOUDINARY_CLOUD_NAME &&
+        process.env.CLOUDINARY_API_KEY &&
+        process.env.CLOUDINARY_API_SECRET),
+  },
 }
