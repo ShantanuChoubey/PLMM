@@ -1,9 +1,12 @@
 export const MESSAGES = {
+  // ─── Server ────────────────────────────────────────────────────────────────
   SERVER_HEALTHY: 'Server is healthy',
   NOT_FOUND: 'Resource not found',
   INTERNAL_ERROR: 'Internal server error',
   TOO_MANY_REQUESTS: 'Too many requests, please try again later',
   ENV_VALIDATION_FAILED: 'Environment validation failed',
+
+  // ─── Auth ──────────────────────────────────────────────────────────────────
   REGISTER_SUCCESS: 'Registration successful',
   LOGIN_SUCCESS: 'Login successful',
   LOGOUT_SUCCESS: 'Logout successful',
@@ -17,10 +20,14 @@ export const MESSAGES = {
   USER_NOT_FOUND: 'User not found',
   USER_DISABLED: 'Your account has been disabled',
   VALIDATION_FAILED: 'Validation failed',
+
+  // ─── Profiles ──────────────────────────────────────────────────────────────
   PROFILE_CREATED: 'Profile created successfully',
   PROFILE_UPDATED: 'Profile updated successfully',
   PROFILE_ALREADY_EXISTS: 'Profile already exists',
   PROFILE_NOT_FOUND: 'Profile not found',
+
+  // ─── Skills ────────────────────────────────────────────────────────────────
   SKILL_CREATED: 'Skill created successfully',
   SKILL_UPDATED: 'Skill updated successfully',
   SKILL_DELETED: 'Skill deleted successfully',
@@ -30,7 +37,9 @@ export const MESSAGES = {
   SKILL_REMOVED: 'Skill removed successfully',
   SKILL_ALREADY_ASSIGNED: 'Skill already assigned to mentor',
   MENTOR_SKILL_NOT_FOUND: 'Mentor skill assignment not found',
-  MENTOR_PROFILE_REQUIRED: 'Mentor profile is required before assigning skills',
+  MENTOR_PROFILE_REQUIRED: 'Mentor profile is required',
+
+  // ─── Availability ──────────────────────────────────────────────────────────
   SLOT_CREATED: 'Availability slot created',
   SLOT_UPDATED: 'Availability slot updated',
   SLOT_DELETED: 'Availability slot deleted',
@@ -38,7 +47,19 @@ export const MESSAGES = {
   SLOT_OVERLAPPING: 'Overlapping slot detected',
   SLOT_NOT_FOUND: 'Availability slot not found',
   SLOT_INVALID_TIME_RANGE: 'End time must be after start time',
+  SLOT_ALREADY_BOOKED: 'This slot is already booked',
+
+  // ─── Discovery ─────────────────────────────────────────────────────────────
   MENTOR_NOT_FOUND: 'Mentor not found',
+
+  // ─── Sessions ──────────────────────────────────────────────────────────────
+  SESSION_BOOKED: 'Session booked successfully',
+  SESSION_ACCEPTED: 'Session accepted successfully',
+  SESSION_REJECTED: 'Session rejected successfully',
+  SESSION_CANCELLED: 'Session cancelled successfully',
+  SESSION_COMPLETED: 'Session completed successfully',
+  SESSION_NOT_FOUND: 'Session not found',
+  SESSION_INVALID_STATUS: 'Action not allowed for the current session status',
 }
 
 export const API_VERSION = 'v1'

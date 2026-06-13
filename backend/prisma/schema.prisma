@@ -1,5 +1,3 @@
-// PLMM — Prisma schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,13 +5,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-enum Role {
-  LEARNER
-  PEER_MENTOR
-  FACULTY_MENTOR
-  ADMIN
 }
 
 model User {
@@ -27,24 +18,25 @@ model User {
   isActive       Boolean         @default(true)
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
+  facultyProfile FacultyProfile?
   learnerProfile LearnerProfile?
   mentorProfile  MentorProfile?
-  facultyProfile FacultyProfile?
 
   @@map("users")
 }
 
 model LearnerProfile {
-  id           String   @id @default(cuid())
-  userId       String   @unique
+  id           String    @id @default(cuid())
+  userId       String    @unique
   department   String?
   year         String?
   bio          String?
   goals        String?
   availability String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions     Session[]
 
   @@map("learner_profiles")
 }
@@ -60,9 +52,10 @@ model MentorProfile {
   availability      String?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
+  availabilitySlots AvailabilitySlot[]
   user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   skills            MentorSkill[]
-  availabilitySlots AvailabilitySlot[]
+  sessions          Session[]
 
   @@map("mentor_profiles")
 }
@@ -114,9 +107,35 @@ model AvailabilitySlot {
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
   mentor    MentorProfile @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  sessions  Session[]
 
   @@unique([mentorId, day, startTime, endTime])
   @@map("availability_slots")
+}
+
+model Session {
+  id          String           @id @default(cuid())
+  learnerId   String
+  mentorId    String
+  slotId      String
+  topic       String
+  description String?
+  meetingLink String?
+  notes       String?
+  status      SessionStatus    @default(PENDING)
+  scheduledAt DateTime?
+  completedAt DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  learner     LearnerProfile   @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+  mentor      MentorProfile    @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  slot        AvailabilitySlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+
+  @@index([learnerId])
+  @@index([mentorId])
+  @@index([slotId])
+  @@index([status])
+  @@map("sessions")
 }
 
 /// Placeholder model for database connectivity testing.
@@ -126,4 +145,19 @@ model SystemHealth {
   note      String   @default("connection test")
 
   @@map("system_health")
+}
+
+enum Role {
+  LEARNER
+  PEER_MENTOR
+  FACULTY_MENTOR
+  ADMIN
+}
+
+enum SessionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COMPLETED
+  CANCELLED
 }
