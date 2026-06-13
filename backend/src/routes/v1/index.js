@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import aiRoutes from '../../modules/ai/ai.routes.js'
 import auditRoutes from '../../modules/audit/audit.routes.js'
 import authRoutes from '../../modules/auth/auth.routes.js'
 import availabilityRoutes from '../../modules/availability/availability.routes.js'
@@ -29,6 +30,7 @@ router.use('/reviews', reviewsRoutes)
 router.use('/notifications', notificationsRoutes)
 router.use('/progress', progressRoutes)
 router.use('/admin/audit-logs', auditRoutes)
+router.use('/ai', aiRoutes)
 router.use('/test', testRoutes)
 
 export default router

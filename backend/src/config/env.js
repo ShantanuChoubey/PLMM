@@ -46,4 +46,8 @@ export const env = {
         process.env.CLOUDINARY_API_KEY &&
         process.env.CLOUDINARY_API_SECRET),
   },
+  gemini: {
+    apiKey: process.env.GEMINI_API_KEY ?? '',
+    configured: !!process.env.GEMINI_API_KEY?.trim(),
+  },
 }

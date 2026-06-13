@@ -103,6 +103,12 @@ export const MESSAGES = {
   // ─── Audit Logs ────────────────────────────────────────────────────────────
   AUDIT_LOGS_FETCHED: 'Audit logs fetched successfully',
   AUDIT_LOG_NOT_FOUND: 'Audit log not found',
+
+  // ─── AI ────────────────────────────────────────────────────────────────────
+  AI_NOT_CONFIGURED: 'AI service is not configured. Add GEMINI_API_KEY to .env',
+  AI_GENERATION_FAILED: 'Failed to generate AI response',
+  AI_INVALID_JSON: 'AI returned an invalid response format',
+  AI_RESPONSE_GENERATED: 'AI response generated successfully',
 }
 
 export const API_VERSION = 'v1'
