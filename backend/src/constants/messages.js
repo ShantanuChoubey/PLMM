@@ -119,6 +119,11 @@ export const MESSAGES = {
   STUDY_PLAN_GENERATED: 'Study plan generated successfully',
   STUDY_PLAN_DELETED: 'Study plan deleted successfully',
   STUDY_PLAN_NOT_FOUND: 'Study plan not found',
+
+  // ─── Goal Analysis ─────────────────────────────────────────────────────────
+  GOAL_ANALYSIS_GENERATED: 'Goal analyzed successfully',
+  GOAL_ANALYSIS_DELETED: 'Goal analysis deleted successfully',
+  GOAL_ANALYSIS_NOT_FOUND: 'Goal analysis not found',
 }
 
 export const API_VERSION = 'v1'

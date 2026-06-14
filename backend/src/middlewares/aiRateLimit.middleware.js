@@ -1,54 +1,33 @@
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit'
 import { StatusCodes } from 'http-status-codes'
 
-/**
- * Shared AI rate limiter: 20 requests per hour.
- * Applied to the /ai/test endpoint.
- */
-export const aiRateLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 20,
-  standardHeaders: true,
-  legacyHeaders: false,
-  keyGenerator: (req, res) =>
-    req.user?.id ?? ipKeyGenerator(req, res),
-  message: {
-    success: false,
-    message: 'Too many AI requests. Maximum 20 requests per hour. Please try again later.',
-  },
-  statusCode: StatusCodes.TOO_MANY_REQUESTS,
-})
+function makeKey(prefix, req, res) {
+  return `${prefix}:${req.user?.id ?? ipKeyGenerator(req, res)}`
+}
 
-/**
- * Study plan rate limiter: 10 generations per hour (separate bucket).
- */
-export const studyPlanRateLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  keyGenerator: (req, res) =>
-    `sp:${req.user?.id ?? ipKeyGenerator(req, res)}`,
-  message: {
-    success: false,
-    message: 'Too many study plan requests. Maximum 10 per hour. Please try again later.',
-  },
-  statusCode: StatusCodes.TOO_MANY_REQUESTS,
-})
+function makeLimiter(prefix, max, label) {
+  return rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req, res) => makeKey(prefix, req, res),
+    message: {
+      success: false,
+      message: `Too many ${label} requests. Maximum ${max} per hour. Please try again later.`,
+    },
+    statusCode: StatusCodes.TOO_MANY_REQUESTS,
+  })
+}
 
-/**
- * Recommendation rate limiter: 10 generations per hour (separate bucket).
- */
-export const recommendationRateLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  keyGenerator: (req, res) =>
-    `rec:${req.user?.id ?? ipKeyGenerator(req, res)}`,
-  message: {
-    success: false,
-    message: 'Too many recommendation requests. Maximum 10 per hour. Please try again later.',
-  },
-  statusCode: StatusCodes.TOO_MANY_REQUESTS,
-})
+// /ai/test endpoint — 20/hr
+export const aiRateLimiter = makeLimiter('ai', 20, 'AI')
+
+// /ai/recommend-mentors — 10/hr
+export const recommendationRateLimiter = makeLimiter('rec', 10, 'recommendation')
+
+// /ai/study-plan — 10/hr
+export const studyPlanRateLimiter = makeLimiter('sp', 10, 'study plan')
+
+// /ai/analyze-goal — 20/hr
+export const goalAnalysisRateLimiter = makeLimiter('ga', 20, 'goal analysis')

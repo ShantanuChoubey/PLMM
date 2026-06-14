@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import aiRoutes from '../../modules/ai/ai.routes.js'
+import goalAnalysisRoutes from '../../modules/goalAnalysis/goalAnalysis.routes.js'
 import recommendationsRoutes from '../../modules/recommendations/recommendations.routes.js'
 import studyPlanRoutes from '../../modules/studyPlan/studyPlan.routes.js'
 import auditRoutes from '../../modules/audit/audit.routes.js'
@@ -35,6 +36,7 @@ router.use('/admin/audit-logs', auditRoutes)
 router.use('/ai', aiRoutes)
 router.use('/ai', recommendationsRoutes)
 router.use('/ai', studyPlanRoutes)
+router.use('/ai', goalAnalysisRoutes)
 router.use('/test', testRoutes)
 
 export default router

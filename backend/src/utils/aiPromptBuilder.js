@@ -89,23 +89,31 @@ Respond ONLY with valid JSON in this exact format:
 }`.trim()
   },
 
-  // ─── Goal Analyser (Sprint 8B) ─────────────────────────────────────────────
+  // ─── Goal Analyser (Sprint 8D) ─────────────────────────────────────────────
 
   /**
-   * @param {string} goal - learner's free-text goal
+   * @param {string} goal     - learner's free-text goal
+   * @param {object} [context] - { department, currentGoals }
    */
-  goalAnalysis(goal) {
-    return `You are an educational advisor.
+  goalAnalysis(goal, context = {}) {
+    const contextBlock = context.currentGoals || context.department
+      ? `\nLearner context:\n- Department: ${context.department ?? 'Not specified'}\n- Current goals: ${context.currentGoals ?? 'Not specified'}`
+      : ''
 
-A student has the following learning goal: "${goal}"
+    return `You are an educational advisor and career coach.
 
-Extract the key skills they need to learn.
+A student has the following career/learning goal: "${goal}"${contextBlock}
+
+Analyze this goal and provide a comprehensive breakdown.
+
 Respond ONLY with valid JSON in this exact format:
 {
   "goal": "${goal}",
-  "requiredSkills": ["<skill1>", "<skill2>"],
-  "suggestedPath": "<brief learning path>",
-  "estimatedDuration": "<e.g. 3 months>"
+  "requiredSkills": ["<skill1>", "<skill2>", "<skill3>"],
+  "roadmap": ["<step1>", "<step2>", "<step3>", "<step4>"],
+  "recommendedTechnologies": ["<tech1>", "<tech2>", "<tech3>"],
+  "careerSuggestions": ["<suggestion1>", "<suggestion2>"],
+  "mentorFocusAreas": ["<area1>", "<area2>", "<area3>"]
 }`.trim()
   },
 
