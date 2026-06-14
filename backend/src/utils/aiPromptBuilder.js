@@ -48,25 +48,41 @@ Respond ONLY with valid JSON in this exact format:
 }`.trim()
   },
 
-  // ─── Study Plan Generator (Sprint 8B) ──────────────────────────────────────
+  // ─── Study Plan Generator (Sprint 8C) ──────────────────────────────────────
 
   /**
-   * @param {string} goal  - e.g. "Learn React in 30 days"
+   * @param {string} goal       - e.g. "Learn React"
+   * @param {number} duration   - number of days
+   * @param {object} [context]  - { department, currentGoals }
    */
-  studyPlan(goal) {
+  studyPlan(goal, duration = 30, context = {}) {
+    const weeks = Math.max(1, Math.ceil(duration / 7))
+    const contextBlock = context.currentGoals || context.department
+      ? `\nLearner context:\n- Department: ${context.department ?? 'Not specified'}\n- Current goals: ${context.currentGoals ?? 'Not specified'}`
+      : ''
+
     return `You are a learning coach for students.
 
-Generate a structured study plan for the following goal: "${goal}"
+Generate a structured ${duration}-day study plan (${weeks} weeks) for the following goal: "${goal}"${contextBlock}
+
+Each week must include:
+- week number
+- focus topic
+- list of specific tasks/topics to cover
+- a milestone to achieve by end of week
+
+Also include 2-3 recommended learning resources.
 
 Respond ONLY with valid JSON in this exact format:
 {
   "goal": "${goal}",
-  "duration": "<e.g. 30 days>",
+  "duration": ${duration},
   "weeks": [
     {
       "week": 1,
-      "focus": "<topic>",
-      "tasks": ["<task1>", "<task2>"]
+      "focus": "<main topic>",
+      "topics": ["<topic1>", "<topic2>", "<topic3>"],
+      "milestone": "<what learner can do by end of week>"
     }
   ],
   "resources": ["<resource1>", "<resource2>"]

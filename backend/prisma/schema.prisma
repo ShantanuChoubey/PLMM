@@ -134,6 +134,7 @@ model LearnerProfile {
   reviews      Review[]
   progressRecords ProgressRecord[]
   recommendations MentorRecommendation[]
+  studyPlans      StudyPlan[]
 
   @@map("learner_profiles")
 }
@@ -391,6 +392,24 @@ model Review {
   @@index([mentorId])
   @@index([learnerId])
   @@map("reviews")
+}
+
+// ─── Study Plans ──────────────────────────────────────────────────────────────
+
+model StudyPlan {
+  id        String         @id @default(cuid())
+  learnerId String
+  goal      String
+  duration  Int            // days
+  plan      Json           // structured roadmap from Gemini
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  learner LearnerProfile @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+
+  @@index([learnerId])
+  @@index([createdAt])
+  @@map("study_plans")
 }
 
 // ─── Mentor Recommendations ───────────────────────────────────────────────────

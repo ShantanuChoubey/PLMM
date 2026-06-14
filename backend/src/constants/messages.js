@@ -114,6 +114,11 @@ export const MESSAGES = {
   RECOMMENDATIONS_GENERATED: 'Mentor recommendations generated successfully',
   RECOMMENDATIONS_DELETED: 'Recommendations cleared successfully',
   RECOMMENDATION_NOT_FOUND: 'Recommendation not found',
+
+  // ─── Study Plans ───────────────────────────────────────────────────────────
+  STUDY_PLAN_GENERATED: 'Study plan generated successfully',
+  STUDY_PLAN_DELETED: 'Study plan deleted successfully',
+  STUDY_PLAN_NOT_FOUND: 'Study plan not found',
 }
 
 export const API_VERSION = 'v1'

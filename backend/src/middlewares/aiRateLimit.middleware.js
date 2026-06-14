@@ -2,22 +2,53 @@ import rateLimit, { ipKeyGenerator } from 'express-rate-limit'
 import { StatusCodes } from 'http-status-codes'
 
 /**
- * AI-specific rate limiter: 20 requests per hour.
- * When the user is authenticated, keyed by userId.
- * Otherwise, keyed by IP (using the library's IPv6-safe ipKeyGenerator).
+ * Shared AI rate limiter: 20 requests per hour.
+ * Applied to the /ai/test endpoint.
  */
 export const aiRateLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
+  windowMs: 60 * 60 * 1000,
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
-  // Use authenticated user ID when available, otherwise fall back to
-  // the library's built-in IPv6-safe IP key generator.
   keyGenerator: (req, res) =>
     req.user?.id ?? ipKeyGenerator(req, res),
   message: {
     success: false,
     message: 'Too many AI requests. Maximum 20 requests per hour. Please try again later.',
+  },
+  statusCode: StatusCodes.TOO_MANY_REQUESTS,
+})
+
+/**
+ * Study plan rate limiter: 10 generations per hour (separate bucket).
+ */
+export const studyPlanRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req, res) =>
+    `sp:${req.user?.id ?? ipKeyGenerator(req, res)}`,
+  message: {
+    success: false,
+    message: 'Too many study plan requests. Maximum 10 per hour. Please try again later.',
+  },
+  statusCode: StatusCodes.TOO_MANY_REQUESTS,
+})
+
+/**
+ * Recommendation rate limiter: 10 generations per hour (separate bucket).
+ */
+export const recommendationRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req, res) =>
+    `rec:${req.user?.id ?? ipKeyGenerator(req, res)}`,
+  message: {
+    success: false,
+    message: 'Too many recommendation requests. Maximum 10 per hour. Please try again later.',
   },
   statusCode: StatusCodes.TOO_MANY_REQUESTS,
 })

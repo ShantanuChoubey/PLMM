@@ -3,7 +3,7 @@ import { ROLES } from '../../constants/roles.js'
 import { authenticate } from '../../middlewares/auth.middleware.js'
 import { authorize } from '../../middlewares/role.middleware.js'
 import { validate } from '../../middlewares/validate.middleware.js'
-import { aiRateLimiter } from '../../middlewares/aiRateLimit.middleware.js'
+import { aiRateLimiter, recommendationRateLimiter } from '../../middlewares/aiRateLimit.middleware.js'
 import {
   deleteRecommendations,
   generateRecommendations,
@@ -23,7 +23,7 @@ router.use(authenticate)
 router.post(
   '/recommend-mentors',
   authorize(ROLES.LEARNER),
-  aiRateLimiter,
+  recommendationRateLimiter,
   validate(generateRecommendationsSchema),
   generateRecommendations,
 )
